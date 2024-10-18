@@ -4,3 +4,24 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+# API
+axum = "0.7.7"
+hyper = { version = "1.5.0", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Asynchronous tasks
+tokio = { version = "1", features = ["full"] }
+
+# Config from yaml or configmap
+config = "0.14.0"
+serde_yaml = "0.9.34+deprecated"
+
+# Logging
+tracing = "0.1.26"
+
+# Template
+tera = "1.0.0"
+
+# Testing
+tokio-test = "0.4.0"
