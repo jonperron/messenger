@@ -1,0 +1,8 @@
+service:
+  name: "NotificationService"
+  environment: "development"
+  port: 3000
+
+templates:
+  path: "./templates/"
+  default_language: "en"
