@@ -1,8 +1,10 @@
+use axum::async_trait;
 use reqwest::Client;
 use serde::Deserialize;
 
-use crate::providers::EmailNotification;
 use crate::providers::errors::ProviderError;
+use crate::providers::notifications::EmailNotification;
+use crate::providers::providers::EmailProvider;
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct MailgunConfig {
@@ -26,7 +28,10 @@ impl MailgunProvider {
     async fn send_email(&self, notification: &EmailNotification) -> Result<(), ProviderError> {
         let url = format!(
             "{}/v3/{}/messages",
-            self.config.base_url.clone().unwrap_or_else(|| "https://api.mailgun.net".to_string()),
+            self.config
+                .base_url
+                .clone()
+                .unwrap_or_else(|| "https://api.mailgun.net".to_string()),
             self.config.domain
         );
 
@@ -56,5 +61,12 @@ impl MailgunProvider {
                 status, text
             )))
         }
+    }
+}
+
+#[async_trait]
+impl EmailProvider for MailgunProvider {
+    async fn send(&self, notification: EmailNotification) -> Result<(), ProviderError> {
+        self.send_email(&notification).await
     }
 }

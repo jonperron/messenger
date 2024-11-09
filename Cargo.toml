@@ -20,6 +20,9 @@ tokio = { version = "1", features = ["full"] }
 config = "0.14.0"
 serde_yaml = "0.9.34+deprecated"
 
+# HTTP calls
+reqwest = "0.12.9"
+
 # Logging
 tracing = "0.1.26"
 

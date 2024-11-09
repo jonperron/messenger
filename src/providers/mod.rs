@@ -1,9 +1,4 @@
-use serde:: {Serialize, Deserialize};
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct EmailNotification {
-    pub from: String,
-    pub to: String,
-    pub subject: String,
-    pub body: String,
-}
+mod errors;
+mod mailgun;
+mod notifications;
+mod providers;
