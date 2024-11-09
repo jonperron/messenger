@@ -1,5 +1,6 @@
 mod config;
 mod templates;
+mod providers;
 
 use axum:: Router;
 use crate::config::Config;
