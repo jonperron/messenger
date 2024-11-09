@@ -1,7 +1,9 @@
 mod config;
+mod templates;
 
 use axum:: Router;
 use crate::config::Config;
+use crate::templates::tera_engine::TemplateEngine;
 
 #[tokio::main]
 async fn main() {
