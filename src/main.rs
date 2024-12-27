@@ -1,4 +1,6 @@
 mod config;
+mod api;
+mod models;
 mod templates;
 mod providers;
 
