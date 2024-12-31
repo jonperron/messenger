@@ -1,17 +1,11 @@
 use axum::async_trait;
 use reqwest::Client;
-use serde::Deserialize;
 
+use crate::config::MailgunConfig;
+use crate::models::EmailNotification;
 use crate::providers::errors::ProviderError;
-use crate::providers::notifications::EmailNotification;
 use crate::providers::providers::EmailProvider;
 
-#[derive(Debug, Deserialize, Clone)]
-pub struct MailgunConfig {
-    pub domain: String,
-    pub api_key: String,
-    pub base_url: Option<String>,
-}
 
 pub struct MailgunProvider {
     config: MailgunConfig,

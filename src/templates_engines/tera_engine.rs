@@ -1,5 +1,4 @@
-use serde::de::value;
-use tera::{Tera, Context, Error as TeraError};
+use tera::{Tera, Context};
 use std::{collections::HashMap, sync::Arc};
 use serde_json::Value;
 

@@ -3,19 +3,23 @@ use axum::{
     extract::Json,
     http::StatusCode,
     response::IntoResponse,
+    routing::post,
 };
 use serde_json::json;
 
+use crate::models::{
+    SendNotificationRequest,
+    EmailNotification,
+};
+
 use crate::providers::{
-    providers::EmailProvider,
-    mailgun::MailgunProvider,
-    notifications::EmailNotification,
+    EmailProvider,
+    MailgunProvider,
     errors::ProviderError,
 };
 use crate::{
     config::Config,
-    models::send_notification_request::SendNotificationRequest,
-    templates::tera_engine::TemplateEngine,
+    templates_engines::TemplateEngine,
 };
 
 
@@ -74,4 +78,16 @@ pub async fn send_notification(
         Ok(_) => (StatusCode::OK, Json(json!({"message": "Notification sent"}))),
         Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))),
     }
+}
+
+pub fn send_router(
+    template_engine: Arc<TemplateEngine>,
+    mailgun_provider: Arc<MailgunProvider>,
+    config: Arc<Config>,
+) -> axum::Router {
+    axum::Router::new().route("/send", post({
+        let template_engine = template_engine.clone();
+        let mailgun_provider = mailgun_provider.clone();
+        move |req| send_notification(req, template_engine.clone(), mailgun_provider.clone(), config.clone())
+    }))
 }

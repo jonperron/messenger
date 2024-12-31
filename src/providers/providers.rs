@@ -1,7 +1,7 @@
 use axum::async_trait;
 
 use crate::providers::errors::ProviderError;
-use crate::providers::notifications::EmailNotification;
+use crate::models::EmailNotification;
 
 #[async_trait]
 pub trait EmailProvider {
