@@ -13,23 +13,32 @@ use axum::{
     Router,
     routing::get,
 };
+use tracing::{info, Level};
+use tracing_subscriber;
+
 use crate::api::send_router;
 use crate::config::Config;
 use crate::providers::MailgunProvider;
 use crate::templates_engines::tera_engine::TemplateEngine;
 use crate::tools::health_handler;
 
-
 #[tokio::main]
 async fn main() {
+    // Set up tracing subscriber to log at info level
+    tracing_subscriber::fmt()
+        .with_max_level(Level::INFO)
+        .init();
+
+    info!("Service starting...");
+
     // Load the configuration
     let config = Arc::new(Config::load_from_file("config.yaml").expect("Failed to load config"));
 
     // Init dependencies
-    let template_engine = Arc::new(TemplateEngine::new("templates").expect("Failed to load template engine"));
+    let template_engine = Arc::new(TemplateEngine::new(format!("{}/**/*.html", &config.templates.path).as_str()).expect("Failed to load template engine"));
     let mailgun_provider = Arc::new(MailgunProvider::new(config.mailgun.clone()));
 
-    let app = send_router(template_engine, mailgun_provider, config.clone())
+    let app = send_router(template_engine, mailgun_provider)
         .merge(Router::new().route("/health", get(health_handler)));
 
     let addr: SocketAddr = format!("0.0.0.0:{}", config.service.port).parse().unwrap();

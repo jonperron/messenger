@@ -1,6 +1,7 @@
 use tera::{Tera, Context};
-use std::{collections::HashMap, sync::Arc};
+use std::{collections::HashMap, sync::Arc, env};
 use serde_json::Value;
+use tracing::info;
 
 pub struct TemplateEngine {
     tera: Arc<Tera>,
@@ -8,7 +9,7 @@ pub struct TemplateEngine {
 
 impl TemplateEngine {
     pub fn new(template_path: &str) -> Result<Self, tera::Error> {
-        let tera = Tera::new(&format!("{}", template_path))?;
+        let tera = Tera::new(template_path)?;
         Ok(Self { tera: Arc::new(tera) })
     }
 
