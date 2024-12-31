@@ -6,3 +6,7 @@ service:
 templates:
   path: "./templates/"
   default_language: "en"
+
+mailgun:
+  api_key: "foo"
+  domain: "bar"

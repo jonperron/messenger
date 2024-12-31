@@ -15,7 +15,7 @@ pub enum ProviderError {
     UnexpectedError(String),
 
     #[error["Api error: {0}"]]
-    ApiError(String)
+    ApiError(String),
 }
 
 impl ProviderError {
