@@ -20,6 +20,7 @@ pub struct TemplatesConfig {
 pub struct Config {
     pub service: ServiceConfig,
     pub templates: TemplatesConfig,
+    pub mailgun: MailgunConfig,
 }
 
 impl Config {
@@ -28,4 +29,11 @@ impl Config {
         let config: Config = serde_yaml::from_str(&content)?;
         Ok(config)
     }
+}
+
+#[derive(Debug, Deserialize, Clone)]
+pub struct MailgunConfig {
+    pub domain: String,
+    pub api_key: String,
+    pub base_url: Option<String>,
 }

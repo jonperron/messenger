@@ -3,31 +3,34 @@ use axum::{
     extract::Json,
     http::StatusCode,
     response::IntoResponse,
+    routing::post,
 };
 use serde_json::json;
+use tracing::info;
+
+use crate::models::{
+    SendNotificationRequest,
+    EmailNotification,
+};
 
 use crate::providers::{
-    providers::EmailProvider,
-    mailgun::MailgunProvider,
-    notifications::EmailNotification,
+    EmailProvider,
+    MailgunProvider,
     errors::ProviderError,
 };
-use crate::{
-    config::Config,
-    models::send_notification_request::SendNotificationRequest,
-    templates::tera_engine::TemplateEngine,
-};
-
+use crate::templates_engines::TemplateEngine;
 
 pub fn create_email_notification(
-    config: &Config,
     request: &SendNotificationRequest,
     template_engine: &TemplateEngine,
 ) -> Result<EmailNotification, ProviderError> {
     // Load the template using the template ID
     let template = template_engine
-        .load(format!("{}/{}", &config.templates.path, &request.template_name).as_str())
-        .map_err(|_| ProviderError::template_error("Template not found"))?;
+        .load(format!("{}", &request.template_name).as_str())
+        .map_err(|e| {
+            tracing::error!("Failed to load template: {:?}", e);
+            ProviderError::template_error("Template not found")
+        })?;
 
     // Render the template with the provided data
     let body = template
@@ -47,7 +50,6 @@ pub async fn send_notification(
     Json(request): Json<SendNotificationRequest>,
     template_engine: Arc<TemplateEngine>,
     mailgun_provider: Arc<MailgunProvider>,
-    config: Arc<Config>,
 ) -> impl IntoResponse {
     // Validate the request
     if let Err(e) = request.validate() {
@@ -56,7 +58,7 @@ pub async fn send_notification(
 
     // Create notification regarding type
     let notification = match request.notification_type.as_str() {
-        "email" => create_email_notification(&config, &request, &template_engine),
+        "email" => create_email_notification(&request, &template_engine),
         _ => Err(ProviderError::invalid_config("Unsupported notification type")),
     };
 
@@ -74,4 +76,15 @@ pub async fn send_notification(
         Ok(_) => (StatusCode::OK, Json(json!({"message": "Notification sent"}))),
         Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))),
     }
+}
+
+pub fn send_router(
+    template_engine: Arc<TemplateEngine>,
+    mailgun_provider: Arc<MailgunProvider>,
+) -> axum::Router {
+    axum::Router::new().route("/send", post({
+        let template_engine = template_engine.clone();
+        let mailgun_provider = mailgun_provider.clone();
+        move |req| send_notification(req, template_engine.clone(), mailgun_provider.clone())
+    }))
 }

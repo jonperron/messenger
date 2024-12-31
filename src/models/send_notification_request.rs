@@ -16,17 +16,12 @@ pub struct SendNotificationRequest {
 
 impl SendNotificationRequest {
     pub fn validate(&self) -> Result<(), ProviderError> {
-        match self.notification_type.as_str() {
-            "email" => {
-                if ["mailgun"].contains(&self.provider.as_str()) {
-                    return Err(ProviderError::invalid_config(
-                        format!("Provider {} is not supported for email notifications", self.provider)
-                    ));
-                }
-            }
-            _ => return Err(ProviderError::invalid_config("Unsupported notification type")),
+        match (self.provider.as_str(), self.notification_type.as_str()) {
+            ("mailgun", "email") => Ok(()), // Accept mailgun for email notifications
+            _ => Err(ProviderError::invalid_config(format!(
+                "Invalid configuration: Provider {} is not supported for {} notifications",
+                self.provider, self.notification_type
+            ))),
         }
-
-        Ok(())
     }
 }
