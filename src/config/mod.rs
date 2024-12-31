@@ -1,7 +1,7 @@
 use serde::Deserialize;
+use serde_yaml;
 use std::fs;
 use std::path::Path;
-use serde_yaml;
 
 #[derive(Debug, Deserialize)]
 pub struct ServiceConfig {

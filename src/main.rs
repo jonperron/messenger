@@ -1,18 +1,15 @@
 // Declare modules part
-mod config;
 mod api;
+mod config;
 mod models;
-mod templates_engines;
 mod providers;
+mod templates_engines;
 mod tools;
 
-use std::sync::Arc;
 use std::net::SocketAddr;
+use std::sync::Arc;
 
-use axum::{
-    Router,
-    routing::get,
-};
+use axum::{routing::get, Router};
 use tracing::{info, Level};
 use tracing_subscriber;
 
@@ -25,9 +22,7 @@ use crate::tools::health_handler;
 #[tokio::main]
 async fn main() {
     // Set up tracing subscriber to log at info level
-    tracing_subscriber::fmt()
-        .with_max_level(Level::INFO)
-        .init();
+    tracing_subscriber::fmt().with_max_level(Level::INFO).init();
 
     info!("Service starting...");
 
@@ -35,7 +30,10 @@ async fn main() {
     let config = Arc::new(Config::load_from_file("config.yaml").expect("Failed to load config"));
 
     // Init dependencies
-    let template_engine = Arc::new(TemplateEngine::new(format!("{}/**/*.html", &config.templates.path).as_str()).expect("Failed to load template engine"));
+    let template_engine = Arc::new(
+        TemplateEngine::new(format!("{}/**/*.html", &config.templates.path).as_str())
+            .expect("Failed to load template engine"),
+    );
     let mailgun_provider = Arc::new(MailgunProvider::new(config.mailgun.clone()));
 
     let app = send_router(template_engine, mailgun_provider)

@@ -6,7 +6,6 @@ use crate::models::EmailNotification;
 use crate::providers::errors::ProviderError;
 use crate::providers::providers::EmailProvider;
 
-
 pub struct MailgunProvider {
     config: MailgunConfig,
     client: Client,
