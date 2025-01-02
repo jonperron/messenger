@@ -57,10 +57,17 @@ Send a notification via API:
 
 ## Running the Service
 
-Build and run the service:
+Build and run the service using cargo:
 
 ```bash
 cargo run
+```
+
+The service is also available via Docker:
+
+```bash
+docker buildx build -t messenger .
+docker run messenger:latest
 ```
 
 Access the API on <http://localhost:3000>.
@@ -79,10 +86,6 @@ providers:
     domain: "your-mailgun-domain.com"
     api_key: "your-mailgun-api-key"
     base_url: "https://api.mailgun.net"
-
-  mailjet:
-    api_key: "your-mailjet-api-key"
-    secret_key: "your-mailjet-secret-key"
 ```
 
 ## Monitoring
