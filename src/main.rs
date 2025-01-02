@@ -34,7 +34,18 @@ async fn main() {
         TemplateEngine::new(format!("{}/**/*.html", &config.templates.path).as_str())
             .expect("Failed to load template engine"),
     );
-    let mailgun_provider = Arc::new(MailgunProvider::new(config.mailgun.clone()));
+
+    if config.providers.is_empty() {
+        panic!("No provider is configured, please check your config file");
+    }
+
+    let mailgun_provider = Arc::new(MailgunProvider::new(
+        config
+            .providers
+            .mailgun
+            .clone()
+            .expect("Mailgun config is missing"),
+    ));
 
     let app = send_router(template_engine, mailgun_provider)
         .merge(Router::new().route("/health", get(health_handler)));
