@@ -1,7 +1,6 @@
 use axum::{extract::Json, http::StatusCode, response::IntoResponse, routing::post};
 use serde_json::json;
 use std::sync::Arc;
-use tracing::info;
 
 use crate::models::{EmailNotification, SendNotificationRequest};
 

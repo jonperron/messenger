@@ -32,3 +32,4 @@ tera = "1.0.0"
 
 # Testing
 tokio-test = "0.4.0"
+tempfile = "3.14.0"
